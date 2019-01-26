@@ -1,11 +1,19 @@
 FROM python:3-slim
 
-RUN groupadd -g 1000 app && useradd -u 1000 -g app -d /app -m app
+RUN groupadd -g 1000 app && \
+    useradd -u 1000 -g app -m app && \
+    mkdir /app && \
+    chown app:app /app
 WORKDIR /app
+RUN python -m pip install pipenv
+
 USER 1000
 
-RUN python -m pip install pipenv
-COPY flask-test-app/Pipfile* /app
+COPY Pipfile* /app/
 RUN pipenv install
 
-COPY flask-test-app /app
+COPY . /app/
+
+EXPOSE 8080
+ENTRYPOINT ["pipenv", "run"]
+CMD ["python3", "app.py"]
