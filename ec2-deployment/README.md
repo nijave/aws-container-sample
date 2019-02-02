@@ -10,8 +10,8 @@ The deployment has many defaults already set but some values are also required f
 ### Required configuration (Terraform variables)
  - `aws_access_key` your aws access key
  - `aws_secret_key` your aws secret
- - `public_key_path` the path to the public part of your RSA key (id_rsa.pub)
- - `private_key_path` the path to the private part of your RSA key (id_rsa)
+ - `public_key_path` the path to the public part of your RSA key (id_rsa.pub). When setting this variable, use forward slashes on Windows or Linux as the path separators
+ - `private_key_path` the path to the private part of your RSA key (id_rsa). When setting this variable, use forward slashes on Windows or Linux as the path separators
 ### Optional configuration
 These values may be changed but have defaults already specified
  - `container_image` {default=roottjnii/interview-container:201805} the Docker image to deploy
@@ -25,3 +25,23 @@ These values may be changed but have defaults already specified
 
 ## Usage
 1. Follow pre-requisites in the in the top-level readme (an AWS account & Terraform)
+2. Create your configuration file. You may specific these with the Terraform command or via a tfvars file.
+Inline: `<terraform command> -var="aws_access_key=1234" -var="aws_secret_key=1234"`  
+In a var file: `<terraform command> -var-file="myvars.tfvars"`  
+The vars file looks like this
+    ```
+    aws_access_key = "1234"
+    aws_secret_key = "1234"
+    public_key_path = "C:/Users/me/.ssh/id_rsa.pub"
+    ```
+3. Once you have the necessary configuration ready, initialize Terraform by opening a command prompt to this directory and executing  
+`terraform init`
+4. Next, check Terraform's calculated plan for creating the infrastructure (or specify the variables inline)  
+`terraform plan -var-file="myvars.tfvars" -out="infrastructure-plan"`
+5. Review the Terraform plan
+6. Apply the Terraform plan. Terraform will attempt to create the requested resources (which will incur costs on AWS). Terraform may ask for confirmation during this step  
+`terraform apply "infrastructure-plan"`
+7. Review created resources on AWS. Terraform will output AWS generated DNS names for the provided infrastructure.
+8. (optional) Run `terraform destroy` to remove provisioned infrastructure.
+
+Note: Terraform will generate additional files it uses to track the state of the infrastructure on AWS. Additional information on managing these files can be found in [Terraform documentation](https://www.terraform.io/docs/state/index.html)
