@@ -49,10 +49,12 @@ Note: Terraform will generate additional files it uses to track the state of the
   - 1 internet gateway
   - 1 nat gateway (needed to pull image from DockerHub without containers having public IPs)
   - 1 elastic ip for nat gateway
-  - routing table for internet access through nat gateway
+  - 1 routing table for internet access through nat gateway
   - 1 application load balancer
-  - 1 target group to load balance containers
+  - __1 target group to load balance containers__
 - Compute
   - 1 ecs cluster
-  - 1 container task definition
-  - 1 container (ecs/fargate) service with 2 task instances (containers)
+  - __1 container task definition__
+  - __1 container (ecs/fargate) service with 2 task instances (containers)__
+
+** Items in bold are application specific--the rest of the infrastructure may be re-used for another applications.
