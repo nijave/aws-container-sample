@@ -1,0 +1,6 @@
+*.tfvars
+terraform.tfstate*
+.terraform/
+
+# Exclude the sample debugging application
+flask-test-app/
