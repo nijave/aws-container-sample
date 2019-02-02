@@ -1,5 +1,6 @@
 variable "aws_access_key" {}
 variable "aws_secret_key" {}
+variable "created_by" {default = "terraform-nick"}
 variable "aws_region" {default = "us-east-2"}
 
 provider "aws" {
@@ -16,8 +17,7 @@ resource "aws_vpc" "app_vpc" {
     assign_generated_ipv6_cidr_block = true
     tags {
         Name = "App VPC"
-        Created-By = "terraform-nick"
-        AppId = "${var.app_id}"
+        Created-By = "${var.created_by}"
     }
 }
 
@@ -26,8 +26,7 @@ resource "aws_internet_gateway" "public_gw" {
     vpc_id = "${aws_vpc.app_vpc.id}"
     tags {
         Name = "App VPC IG"
-        Created-By = "terraform-nick"
-        AppId = "${var.app_id}"
+        Created-By = "${var.created_by}"
     }
 }
 
@@ -44,8 +43,7 @@ resource "aws_default_route_table" "app_vpc_route_table" {
     }
     tags {
         Name = "App VPC default route table"
-        Created-By = "terraform-nick"
-        AppId = "${var.app_id}"
+        Created-By = "${var.created_by}"
     }
 }
 
@@ -56,8 +54,7 @@ resource "aws_subnet" "public_subnet" {
     ipv6_cidr_block = "${cidrsubnet(aws_vpc.app_vpc.ipv6_cidr_block, 8, 254)}"
     tags {
         Name = "App VPC Public Subnet"
-        Created-By = "terraform-nick"
-        AppId = "${var.app_id}"
+        Created-By = "${var.created_by}"
     }
 }
 
@@ -71,6 +68,9 @@ resource "aws_route_table" "public-route-table" {
         ipv6_cidr_block = "::/0"
         gateway_id = "${aws_internet_gateway.public_gw.id}"
     }
+    tags {
+        Created-By = "${var.created_by}"
+    }
 }
 
 resource "aws_route_table_association" "public-route-table-to-subnet" {
@@ -80,12 +80,18 @@ resource "aws_route_table_association" "public-route-table-to-subnet" {
 
 resource "aws_eip" "nat_ip" {
     vpc = true
+    tags {
+        Created-By = "${var.created_by}"
+    }
 }
 
 resource "aws_nat_gateway" "nat_gw" {
     allocation_id = "${aws_eip.nat_ip.id}"
     subnet_id = "${aws_subnet.public_subnet.id}"
     depends_on = ["aws_internet_gateway.public_gw"]
+    tags {
+        Created-By = "${var.created_by}"
+    }
 }
 
 resource "aws_subnet" "private_subnet1" {
@@ -95,8 +101,7 @@ resource "aws_subnet" "private_subnet1" {
     availability_zone = "${var.aws_region}a"
     tags {
         Name = "App VPC Private Subnet"
-        Created-By = "terraform-nick"
-        AppId = "${var.app_id}"
+        Created-By = "${var.created_by}"
     }
 }
 
@@ -107,7 +112,6 @@ resource "aws_subnet" "private_subnet2" {
     availability_zone = "${var.aws_region}b"
     tags {
         Name = "App VPC Private Subnet"
-        Created-By = "terraform-nick"
-        AppId = "${var.app_id}"
+        Created-By = "${var.created_by}"
     }
 }

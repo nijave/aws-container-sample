@@ -20,7 +20,7 @@ These values may be changed but have defaults already specified
  - `management_ip_block` {default = 0.0.0.0/0} the ipv4 subnet that has ssh (mangement) access
  - `management_ipv6_block` {default = ::/0} the ipv6 subnet that has ssh (management) access
  - `aws_region` {default = us-east-2} the region you'd like to deploy the infrastructure in
- - `created_by` {default = terraform-nick} a tag assigned to the resources created to separate them from other users
+ - `created_by` {default = terraform-nick} a tag assigned to the resources created to separate them from other users or utilities
  - `app_id` {default = SampleTerraformContainerApp} a tag assigned to all the resources to help identify what app they are for
 
 ## Usage

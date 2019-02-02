@@ -13,3 +13,6 @@ This deployment plan creates VMs and exposes the containers directly. This confi
 
 ## 2. ECS based deployment (`ecs-deployment/`)
 This deployment utilizes the Amazon Elastic Container Service (ECS). ECS handles container lifecycle and cleanly integrates with the Application Load Balancer (ALB) to provide high-availability. This deployment is suitable for a production environment. More details can be found in the `ecs-deployment/` directory
+
+## Multiple environments
+The recommended approach to multiple environments is using the same configuration base against serparate AWS accounts. Terraform stores state in the folder, so the folder will need to be copied per environment.

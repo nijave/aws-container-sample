@@ -33,7 +33,7 @@ resource "aws_security_group" "ecs_ingress_egress" {
     ipv6_cidr_blocks = ["::/0"]
   }
   tags {
-        Created-By = "terraform-nick"
+        Created-By = "${var.created_by}"
         AppId = "${var.app_id}"
     }
 }
@@ -61,6 +61,8 @@ resource "aws_lb_target_group" "container-app-target" {
     }
     tags {
         Name = "container-app-group"
+        Created-By = "${var.created_by}"
+        AppId = "${var.app_id}"
     }
 }
 
@@ -77,28 +79,10 @@ resource "aws_alb_listener" "container-listener" {
 resource "aws_cloudwatch_log_group" "container-app-logs" {
     name = "container-app-logs"
     retention_in_days = 14
-}
-
-# Reference https://github.com/turnerlabs/terraform-ecs-fargate/blob/master/env/dev/ecs.tf
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
+    tags {
+        Created-By = "${var.created_by}"
+        AppId = "${var.app_id}"
     }
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
-  role       = "${aws_iam_role.ecs_task_execution_role.name}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-resource "aws_iam_role" "ecs_task_execution_role" {
-    name = "ecsTaskExecutionRole"
-    assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
 }
 
 resource "aws_ecs_task_definition" "app-task" {
@@ -131,6 +115,10 @@ resource "aws_ecs_task_definition" "app-task" {
     }
 ]
 DEFINITION
+    tags {
+        Created-By = "${var.created_by}"
+        AppId = "${var.app_id}"
+    }
 }
 
 data "aws_ecs_task_definition" "app-task" {
@@ -156,4 +144,8 @@ resource "aws_ecs_service" "container-app-deployment" {
     }
     # Target group must be attached to load balancer before attempting service creation or service creation will fail
     depends_on = ["aws_alb_listener.container-listener"]
+    tags {
+        Created-By = "${var.created_by}"
+        AppId = "${var.app_id}"
+    }
 }

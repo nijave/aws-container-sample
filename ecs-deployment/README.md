@@ -16,7 +16,7 @@ These values may be changed but have defaults already specified
  - `instance_count` {default = 2} the number of instances you'd like to run
  - `aws_region` {default = us-east-2} the region you'd like to deploy the infrastructure in
  - `created_by` {default = terraform-nick} a tag assigned to the resources created to separate them from other users
- - `app_id` {default = SampleTerraformContainerApp} a tag assigned to all the resources to help identify what app they are for
+ - `app_id` {default = SampleTerraformContainerApp} a tag assigned to all the resources to help identify what app they are for (this only applies to app-specific items listed below in bold)
 
 ## Usage
 1. Follow pre-requisites in the in the top-level readme (an AWS account & Terraform)
@@ -60,5 +60,5 @@ Note: Terraform will generate additional files it uses to track the state of the
 ** Items in bold are application specific--the rest of the infrastructure may be re-used for another applications.
 
 ## Management notes
-- Zero down upgrade can be achieved by changing the Docker image and rerunning Terraform. This won't work if the port changes.
-- Container logs and be viewed via CloudWatch
+- Zero downtime upgrades can be achieved by changing the Docker image and rerunning Terraform. This won't work if the container port changes.
+- Container logs can be viewed via CloudWatch
