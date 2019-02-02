@@ -58,4 +58,7 @@ Note: Terraform will generate additional files it uses to track the state of the
   - __1 container (ecs/fargate) service with 2 task instances (containers)__
 
 ** Items in bold are application specific--the rest of the infrastructure may be re-used for another applications.
-** Note: Zero down upgrade can be achieved by changing the Docker image and rerunning Terraform. This won't work if the port changes.
+
+## Management notes
+- Zero down upgrade can be achieved by changing the Docker image and rerunning Terraform. This won't work if the port changes.
+- Container logs and be viewed via CloudWatch

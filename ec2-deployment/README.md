@@ -45,3 +45,7 @@ The vars file looks like this
 8. (optional) Run `terraform destroy` to remove provisioned infrastructure.
 
 Note: Terraform will generate additional files it uses to track the state of the infrastructure on AWS. Additional information on managing these files can be found in [Terraform documentation](https://www.terraform.io/docs/state/index.html)
+
+## Management Notes
+- Logs can be viewed by ssh-ing into the EC2 instance and checking Docker logs
+- Troubleshooting can be done via connecting to the EC2 instance and working with Docker interactively
