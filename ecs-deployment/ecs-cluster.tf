@@ -19,17 +19,25 @@ resource "aws_security_group" "alb_public_ingress" {
     }
 }
 
+# Create ALB
+resource "aws_lb" "app_alb" {
+    name = "container-app-alb"
+    internal = false
+    security_groups = [
+        "${aws_security_group.alb_public_ingress.id}"
+    ]
+    subnets = [
+        "${aws_subnet.private_subnet1.id}",
+        "${aws_subnet.private_subnet2.id}"
+    ]
+    ip_address_type = "dualstack"
+    load_balancer_type = "application"
+}
 resource "aws_ecs_cluster" "fargate-cluster" {
     name = "fargate-cluster"
 }
 
-# Create an ec2 instance and install nginx
 
-##################################################################################
-# OUTPUT
-##################################################################################
-
-# TODO change to ALB DNS
 output "aws_instance_public_dns" {
     value = "${aws_lb.app_alb.dns_name}"
 }

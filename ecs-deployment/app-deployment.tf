@@ -38,21 +38,6 @@ resource "aws_security_group" "ecs_ingress_egress" {
     }
 }
 
-# Create ALB
-resource "aws_lb" "app_alb" {
-    name = "container-app-alb"
-    internal = false
-    security_groups = [
-        "${aws_security_group.alb_public_ingress.id}"
-    ]
-    subnets = [
-        "${aws_subnet.private_subnet1.id}",
-        "${aws_subnet.private_subnet2.id}"
-    ]
-    ip_address_type = "dualstack"
-    load_balancer_type = "application"
-}
-
 # Target group for load balancer
 resource "aws_lb_target_group" "container-app-target" {
     health_check {
@@ -65,12 +50,18 @@ resource "aws_lb_target_group" "container-app-target" {
         matcher = "200"
     }
 
-    name = "container-app-group"
     port = "${var.container_port}"
     protocol = "HTTP"
     target_type = "ip"
     deregistration_delay = 30 # quicker deregistration
     vpc_id = "${aws_vpc.app_vpc.id}"
+    # workaround https://github.com/terraform-providers/terraform-provider-aws/issues/636
+    lifecycle {
+        create_before_destroy = true
+    }
+    tags {
+        Name = "container-app-group"
+    }
 }
 
 resource "aws_alb_listener" "container-listener" {
@@ -82,11 +73,41 @@ resource "aws_alb_listener" "container-listener" {
         type = "forward"
     }
 }
+
+resource "aws_cloudwatch_log_group" "container-app-logs" {
+    name = "container-app-logs"
+    retention_in_days = 14
+}
+
+# Reference https://github.com/turnerlabs/terraform-ecs-fargate/blob/master/env/dev/ecs.tf
+data "aws_iam_policy_document" "assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
+  role       = "${aws_iam_role.ecs_task_execution_role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+    name = "ecsTaskExecutionRole"
+    assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+}
+
 resource "aws_ecs_task_definition" "app-task" {
     family = "app-task"
     cpu = "${var.container_cpu}"
     memory = "${var.container_memory}"
     network_mode = "awsvpc"
+    requires_compatibilities = ["FARGATE"]
+    execution_role_arn = "${aws_iam_role.ecs_task_execution_role.arn}"
     container_definitions = <<DEFINITION
 [
     {
@@ -98,7 +119,15 @@ resource "aws_ecs_task_definition" "app-task" {
                 "containerPort": ${var.container_port},
                 "protocol": "tcp"
             }
-        ]
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": "${aws_cloudwatch_log_group.container-app-logs.name}",
+                "awslogs-region": "${var.aws_region}",
+                "awslogs-stream-prefix": "ecs"
+            }
+        }
     }
 ]
 DEFINITION
@@ -125,4 +154,6 @@ resource "aws_ecs_service" "container-app-deployment" {
         container_name = "app"
         container_port = "${var.container_port}"
     }
+    # Target group must be attached to load balancer before attempting service creation or service creation will fail
+    depends_on = ["aws_alb_listener.container-listener"]
 }
