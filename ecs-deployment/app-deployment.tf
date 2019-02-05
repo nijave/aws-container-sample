@@ -1,6 +1,6 @@
 variable "app_id" {default = "SampleTerraformApp"}
-variable "container_image" {default = "roottjnii/interview-container:201805"}
-variable "container_port" {default = 4567}
+variable "container_image" {default = "nijave/flask-test-app"}
+variable "container_port" {default = 8080}
 variable "instance_count" {default = 2}
 variable "container_cpu" {default = 256}
 variable "container_memory" {default = 512}

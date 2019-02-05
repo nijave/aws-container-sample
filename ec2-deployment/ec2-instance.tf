@@ -4,8 +4,8 @@ variable "public_key_path" {}
 variable "private_key_path" {}
 # IP blocks that are allowed to ssh-in
 
-variable "container_image" {default="roottjnii/interview-container:201805"}
-variable "container_port" {default=4567}
+variable "container_image" {default="nijave/flask-test-app"}
+variable "container_port" {default=8080}
 variable "instance_count" {default=1}
 variable "management_ip_block" {default = "0.0.0.0/0"}
 variable "management_ipv6_block" {default = "::/0"}
