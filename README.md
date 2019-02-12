@@ -1,4 +1,4 @@
-# root-insurance-interview
+# AWS Terraform Example
 
 This repository provides two different sample deployments
   1. EC2 instance based using the Docker daemon
