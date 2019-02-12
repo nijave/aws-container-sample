@@ -1,32 +1,4 @@
-variable "aws_access_key" {default=""}
-variable "aws_secret_key" {default=""}
-variable "created_by" {default = "terraform-nick"}
-variable "aws_region" {default = "us-east-2"}
-variable "azs" {
-    description = "List of availability zones in a region to deploy to"
-    type = "list"
-    default = ["a", "b", "c"]
-}
-
-variable "az_count" {
-    description = "Number of availability zones to deploy in. Defaults to all of them when set to -1"
-    default = -1
-}
-
-locals {
-    calculated_az_count = "${var.az_count == -1 ? length(var.azs) : var.az_count}"
-}
-
 # ascii text http://patorjk.com/software/taag/#p=display&f=Standard
-
-provider "aws" {
-    # access_key = "${var.aws_access_key}"
-    # secret_key = "${var.aws_secret_key}"
-    shared_credentials_file = "C:/Users/Nick/.aws/credentials"
-    profile = "adfs"
-    region = "${var.aws_region}"
-}
-
 #  __     ______   ____   ____       _               
 #  \ \   / /  _ \ / ___| / ___|  ___| |_ _   _ _ __  
 #   \ \ / /| |_) | |     \___ \ / _ \ __| | | | '_ \ 
@@ -112,11 +84,13 @@ resource "aws_route_table" "private_route_table" {
         gateway_id = "${aws_egress_only_internet_gateway.egress_gw.id}"
     }
     tags {
+        Name = "${format("Private route table for %d", count.index)}"
         Created-By = "${var.created_by}"
     }
 }
 
 resource "aws_route_table_association" "private_route_table_association" {
+    count = "${local.calculated_az_count}"
     subnet_id = "${element(aws_subnet.private_subnet.*.id, count.index)}"
     route_table_id = "${element(aws_route_table.private_route_table.*.id, count.index)}"
 }
@@ -146,11 +120,13 @@ resource "aws_route_table" "public_route_table" {
         gateway_id = "${aws_internet_gateway.public_gw.id}"
     }
     tags {
+        Name = "${format("Public route table for %d", count.index)}"
         Created-By = "${var.created_by}"
     }
 }
 
 resource "aws_route_table_association" "public_route_table_association" {
+    count = "${local.calculated_az_count}"
     subnet_id = "${element(aws_subnet.public_subnet.*.id, count.index)}"
     route_table_id = "${element(aws_route_table.public_route_table.*.id, count.index)}"
 }

@@ -1,6 +1,7 @@
 *.tfvars
 terraform.tfstate*
 .terraform/
+*.lock.info
 *-plan
 # Exclude the sample debugging application
 flask-test-app/
