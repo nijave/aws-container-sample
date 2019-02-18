@@ -1,4 +1,7 @@
 # ECS-Based deployment plan
+
+__*Note: This is an older version of an ECS deployment and has been superseded by ecs-dynamic-vpc-deployment*__
+
 This plan deploys two containers on AWS Elastic Container Service (ECS) and places a load balancer in front to route traffic to both instances. The load balancer employs a healthcheck which will recycle containers if an HTTP check fails. In addition, ECS will automatically restart crashed containers. This plan is more suitable for a production environment requiring high availability. Additionally, this plan eases management by removing the need to manage the operating system configuration when using an EC2 instance. Finally, AWS will allow you to graceful deploy new versions using this pattern which can be slowly cycled and added to the load balancer remove the old version is removed.
 
 ## Prerequisites
@@ -6,9 +9,9 @@ This plan deploys two containers on AWS Elastic Container Service (ECS) and plac
 
 ## Configuration
 The deployment has many defaults already set but some values are also required for the deployment. This configuration is provided to Terraform using variables. The usage section contains an example.
-### Required configuration (Terraform variables)
- - `aws_access_key` your aws access key
- - `aws_secret_key` your aws secret
+### Required configuration (environment variables)
+ - `AWS_ACCESS_KEY_ID` your AWS access key
+ - `AWS_SECRET_ACCESS_KEY` your AWS secret key
 ### Optional configuration
 These values may be changed but have defaults already specified
  - `container_image` {default=roottjnii/interview-container:201805} the Docker image to deploy
