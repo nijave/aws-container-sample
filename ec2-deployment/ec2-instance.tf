@@ -1,8 +1,5 @@
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
 variable "public_key_path" {}
 variable "private_key_path" {}
-# IP blocks that are allowed to ssh-in
 
 variable "container_image" {default="nijave/flask-test-app"}
 variable "container_port" {default=8080}
@@ -14,9 +11,6 @@ variable "created_by" {default = "terraform-nick"}
 variable "app_id" {default = "SampleTerraformContainerApp"}
 
 provider "aws" {
-    access_key = "${var.aws_access_key}"
-    secret_key = "${var.aws_secret_key}"
-
     region = "${var.aws_region}"
 }
 

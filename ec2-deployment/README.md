@@ -7,9 +7,10 @@ This plan deploys a single container per EC2 host and exposes these hosts direct
 
 ## Configuration
 The deployment has many defaults already set but some values are also required for the deployment. This configuration is provided to Terraform using variables. The usage section contains an example.
+### Required configuration (environment variables)
+ - `AWS_ACCESS_KEY_ID` your AWS access key
+ - `AWS_SECRET_ACCESS_KEY` your AWS secret key
 ### Required configuration (Terraform variables)
- - `aws_access_key` your aws access key
- - `aws_secret_key` your aws secret
  - `public_key_path` the path to the public part of your RSA key (id_rsa.pub). When setting this variable, use forward slashes on Windows or Linux as the path separators
  - `private_key_path` the path to the private part of your RSA key (id_rsa). When setting this variable, use forward slashes on Windows or Linux as the path separators
 ### Optional configuration
